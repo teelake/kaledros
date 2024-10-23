@@ -1,0 +1,95 @@
+Presentation: Cloud-Based Infrastructure Setup and Python Application Deployment
+
+1: EKS Infrastructure: kaledros-eks-cluster\Kaledros-EKS\terraform
+2: CICD Infrastructure: Kaledros-EKS\cicd-pipeline
+3: Jenkinsfile: Kaledros-EKS\jenkinsfile
+4: Python script: kaledros-eks-cluster\Kaledros-EKS\kaledros-script.py
+5: dockrfile: kaledros-eks-cluster\Kaledros-EKS\dockerfile
+
+Title: Cloud-Based Infrastructure Setup and Python Application Deployment
+Subtitle: Utilizing AWS Services, Terraform, Docker, and Jenkins
+
+Slide 2: Project Overview
+
+Objective:
+Set up a foundational cloud-based infrastructure for a hypothetical application.
+Provision cloud storage, a message queue, and containerization infrastructure.
+Implement a CI/CD strategy and ensure monitoring and security.
+Dockerize and deploy a Python script in a containerized environment.
+Tools and Technologies:
+Infrastructure: AWS (S3, SQS, EKS), Terraform
+CI/CD: Jenkins, Docker, Kubernetes
+Monitoring: Prometheus, Grafana, AWS CloudWatch
+Security: IAM Roles, Security Groups, Network Policies
+
+
+Slide 3: Infrastructure Setup Using IaC (Terraform)
+
+Cloud Storage (S3 Bucket):
+Provisioned an S3 bucket for storing application data using Terraform.
+Ensured private access control for data security.
+Message Queue (AWS SQS):
+Set up an SQS queue to enable asynchronous communication between application components.
+Containerization Infrastructure (EKS Cluster):
+Deployed an Amazon EKS cluster using Terraform.
+Configured networking (VPC, subnets) and IAM roles for secure access.
+Integrated AWS Load Balancer Controller for managing ingress traffic.
+
+
+Slide 4: Python Script in a Container
+
+Objective:
+Dockerize the provided Python script and deploy it in a containerized environment.
+Python Script Functionality:
+Receives HTTP POST requests via a Flask web service.
+Logs request data to an S3 bucket.
+Optionally sends the data to an SQS queue.
+Dockerization:
+Created a Dockerfile to build a container image for the Python script.
+The container is configured to run the Flask application and interact with AWS services.
+
+
+Slide 5: CI/CD Strategy
+
+Infrastructure Management:
+Jenkins pipeline to automate Terraform tasks: validate, plan, and apply changes.
+Application Deployment:
+Jenkins pipeline stages for building, testing, and deploying the Dockerized Python application.
+Docker images are built and tested in Jenkins, then deployed to EKS using Helm.
+Pipeline Details:
+Stages: Validate Terraform, Plan Terraform, Apply Terraform, Build Docker Image, Deploy to Kubernetes.
+Triggers: Automatic builds and deployments on code commits to the repository.
+
+
+Slide 6: Monitoring and Security
+
+Monitoring Tools:
+Prometheus: Monitors the health and performance of the EKS cluster.
+Grafana: Provides dashboards for visualizing metrics collected by Prometheus.
+AWS CloudWatch: Centralized logging and monitoring for S3, SQS, and other AWS services.
+Security Measures:
+IAM Roles: Implemented least privilege access for AWS resources.
+Security Groups: Restricted network traffic to and from the EKS cluster.
+Kubernetes Network Policies: Controlled inter-pod communication within the cluster.
+Data Encryption: Used AWS KMS for encrypting data at rest and in transit.
+
+
+Slide 7: Project Outcomes
+
+Infrastructure Provisioning:
+Successfully provisioned all required cloud resources using Terraform.
+Application Deployment:
+Dockerized and deployed the Python application in the EKS cluster.
+Implemented a robust CI/CD pipeline for managing infrastructure and application code changes.
+Monitoring and Security:
+Set up comprehensive monitoring and security measures to ensure the reliability and integrity of the infrastructure.
+
+
+Slide 8: Challenges and Solutions
+
+Challenge 1: Integrating Terraform with Jenkins
+Solution: Used Terraform plugins and scripts to automate infrastructure provisioning.
+Challenge 2: Ensuring Secure Communication
+Solution: Implemented IAM policies, security groups, and network policies to secure data and network traffic.
+Challenge 3: Monitoring Distributed Systems
+Solution: Deployed Prometheus and Grafana for real-time monitoring and alerting.

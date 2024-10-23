@@ -1,0 +1,28 @@
+Project Overview: Cloud-Based Infrastructure Setup and Python Application Deployment
+
+This project involves the design and implementation of a foundational cloud-based infrastructure to support a hypothetical application. 
+The goal is to provision necessary resources using Infrastructure as Code (IaC), automate the deployment process, 
+and ensure the system is both secure and scalable.
+
+Key Components:
+
+Infrastructure Provisioning using Terraform:
+
+Cloud Storage: An Amazon S3 bucket is provisioned to securely store application data.
+Message Queue: An Amazon SQS queue is set up to facilitate asynchronous communication between different components of the application.
+Containerization Infrastructure: An Amazon EKS (Elastic Kubernetes Service) cluster is deployed to run containerized applications, 
+with a focus on scalability and high availability.
+Python Application Deployment:
+
+A Python script is developed and containerized using Docker. This script, implemented as a Flask web service, 
+processes HTTP POST requests, logs the data to the S3 bucket, and optionally sends messages to the SQS queue.
+CI/CD Pipeline Implementation:
+
+A Jenkins pipeline is configured to automate the deployment process, from validating and applying infrastructure 
+changes using Terraform to building, testing, and deploying the Python application in the EKS cluster.
+Monitoring and Security:
+
+Monitoring: Prometheus and Grafana are deployed to monitor the health and performance of the infrastructure, 
+while AWS CloudWatch provides centralized logging and monitoring for AWS services.
+Security: IAM roles, security groups, and Kubernetes network policies are implemented to ensure secure access and 
+communication within the infrastructure. 

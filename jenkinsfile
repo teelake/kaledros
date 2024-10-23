@@ -1,0 +1,91 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_REGION = 'us-west-2'
+        DYNAMIC_ENVIRONMENT_NAME = "review-${env.BRANCH_NAME}"
+        DYNAMIC_ENVIRONMENT_URL = "https://${env.JOB_NAME}-${env.BUILD_NUMBER}.${env.DYNAMIC_ENVIRONMENT_NAME}.your-domain.com"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Validate Terraform') {
+            steps {
+                script {
+                    sh 'terraform init'
+                    sh 'terraform validate'
+                }
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                script {
+                    sh 'terraform plan -out=tfplan'
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: 'tfplan', allowEmptyArchive: true
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            when {
+                branch 'master'
+            }
+            steps {
+                script {
+                    sh 'terraform apply -auto-approve tfplan'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh 'docker build -t kaledros-python-app:$BUILD_NUMBER .'
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    sh 'docker run Kaledros-python-app:$BUILD_NUMBER python Kaledros-script.py --test'
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            when {
+                branch 'master'
+            }
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                        sh '''
+                            kubectl config set-context --current --namespace=default
+                            helm upgrade --install my-release ./helm-chart \
+                                --set image.tag=$BUILD_NUMBER \
+                                --set environment.name=$DYNAMIC_ENVIRONMENT_NAME \
+                                --set environment.url=$DYNAMIC_ENVIRONMENT_URL
+                        '''
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
