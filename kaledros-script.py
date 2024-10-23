@@ -27,7 +27,6 @@ def process_request():
         data = request.json
         logger.info(f"Received data: {data}")
 
-
         # Log the request data to S3
         s3_object_key = f"logs/{request.remote_addr}-{request.headers['X-Request-Id']}.json"
         s3_client.put_object(Bucket=S3_BUCKET_NAME, Key=s3_object_key, Body=str(data))
