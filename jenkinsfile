@@ -1,11 +1,19 @@
 pipeline {
     agent any
 
+//    environment {
+    //     AWS_REGION = 'us-west-2'
+    //     DYNAMIC_ENVIRONMENT_NAME = "review-${env.BRANCH_NAME}"
+    //     DYNAMIC_ENVIRONMENT_URL = "https://${env.JOB_NAME}-${env.BUILD_NUMBER}.${env.DYNAMIC_ENVIRONMENT_NAME}.your-domain.com"
+    // }
+
     environment {
-        AWS_REGION = 'us-west-2'
-        DYNAMIC_ENVIRONMENT_NAME = "review-${env.BRANCH_NAME}"
-        DYNAMIC_ENVIRONMENT_URL = "https://${env.JOB_NAME}-${env.BUILD_NUMBER}.${env.DYNAMIC_ENVIRONMENT_NAME}.your-domain.com"
-    }
+    AWS_REGION = 'us-west-2'
+    DYNAMIC_ENVIRONMENT_NAME = "review-${env.BRANCH_NAME}"
+    DYNAMIC_ENVIRONMENT_URL = "https://${env.JOB_NAME}-${env.BUILD_NUMBER}.${env.DYNAMIC_ENVIRONMENT_NAME}.your-domain.com"
+    SONAR_URL = 'http://13.52.68.80:9000' // Replace YOUR_PRIVATE_IP with the actual IP
+}
+
 
     stages {
         stage('Checkout') {
