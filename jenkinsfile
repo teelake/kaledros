@@ -8,8 +8,8 @@ pipeline {
         SONAR_URL = 'http://13.52.68.80:9000' // Replace with actual SonarQube IP
 
         // Use the username and password for AWS credentials
-    AWS_ACCESS_KEY_ID = credentials('aws_credentials').username
-    AWS_SECRET_ACCESS_KEY = credentials('aws_credentials').password
+    //AWS_ACCESS_KEY_ID = credentials('aws_credentials').username
+    //AWS_SECRET_ACCESS_KEY = credentials('aws_credentials').password
     }
 
     stages {
