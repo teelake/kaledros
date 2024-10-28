@@ -5,7 +5,9 @@
 resource "aws_security_group" "kaledros-eks-cluster" {
   name        = "kaledros-EKS-cluster-sg"
   description = "Cluster communication with worker nodes"
-  vpc_id      = aws_vpc.kaledros-eks-cluster-main.id
+  # vpc_id      = aws_vpc.kaledros-eks-cluster-main.id
+  vpc_id      = aws_vpc.minecraft-eks-cluster-main.id
+
 
   dynamic "ingress" {
     for_each = var.ingress_ports
