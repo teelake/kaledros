@@ -2,10 +2,13 @@ pipeline {
     agent any
 
     environment {
-        AWS_REGION = 'us-west-2'
+        AWS_REGION = 'us-west-1'
         DYNAMIC_ENVIRONMENT_NAME = "review-${env.BRANCH_NAME}"
         DYNAMIC_ENVIRONMENT_URL = "https://${env.JOB_NAME}-${env.BUILD_NUMBER}.${env.DYNAMIC_ENVIRONMENT_NAME}.your-domain.com"
         SONAR_URL = 'http://13.52.68.80:9000' // Replace with actual SonarQube IP
+
+        AWS_ACCESS_KEY_ID = credentials('teelake')
+        AWS_SECRET_ACCESS_KEY = credentials('Geek_techie')
     }
 
     stages {
