@@ -1,19 +1,12 @@
 pipeline {
     agent any
 
-//    environment {
-    //     AWS_REGION = 'us-west-2'
-    //     DYNAMIC_ENVIRONMENT_NAME = "review-${env.BRANCH_NAME}"
-    //     DYNAMIC_ENVIRONMENT_URL = "https://${env.JOB_NAME}-${env.BUILD_NUMBER}.${env.DYNAMIC_ENVIRONMENT_NAME}.your-domain.com"
-    // }
-
     environment {
-    AWS_REGION = 'us-west-2'
-    DYNAMIC_ENVIRONMENT_NAME = "review-${env.BRANCH_NAME}"
-    DYNAMIC_ENVIRONMENT_URL = "https://${env.JOB_NAME}-${env.BUILD_NUMBER}.${env.DYNAMIC_ENVIRONMENT_NAME}.your-domain.com"
-    SONAR_URL = 'http://13.52.68.80:9000' // Replace YOUR_PRIVATE_IP with the actual IP
-}
-
+        AWS_REGION = 'us-west-2'
+        DYNAMIC_ENVIRONMENT_NAME = "review-${env.BRANCH_NAME}"
+        DYNAMIC_ENVIRONMENT_URL = "https://${env.JOB_NAME}-${env.BUILD_NUMBER}.${env.DYNAMIC_ENVIRONMENT_NAME}.your-domain.com"
+        SONAR_URL = 'http://13.52.68.80:9000' // Replace with actual SonarQube IP
+    }
 
     stages {
         stage('Checkout') {
@@ -25,8 +18,10 @@ pipeline {
         stage('Validate Terraform') {
             steps {
                 script {
-                    sh 'terraform init'
-                    sh 'terraform validate'
+                    dir('terraform/eks-cluster-ec2') {
+                        sh 'terraform init'
+                        sh 'terraform validate'
+                    }
                 }
             }
         }
@@ -34,12 +29,14 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 script {
-                    sh 'terraform plan -out=tfplan'
+                    dir('terraform/eks-cluster-ec2') {
+                        sh 'terraform plan -out=tfplan'
+                    }
                 }
             }
             post {
                 success {
-                    archiveArtifacts artifacts: 'tfplan', allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'terraform/eks-cluster-ec2/tfplan', allowEmptyArchive: true
                 }
             }
         }
@@ -50,7 +47,9 @@ pipeline {
             }
             steps {
                 script {
-                    sh 'terraform apply -auto-approve tfplan'
+                    dir('terraform/eks-cluster-ec2') {
+                        sh 'terraform apply -auto-approve tfplan'
+                    }
                 }
             }
         }
@@ -66,7 +65,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    sh 'docker run Kaledros-python-app:$BUILD_NUMBER python Kaledros-script.py --test'
+                    sh 'docker run kaledros-python-app:$BUILD_NUMBER python Kaledros-script.py --test'
                 }
             }
         }
