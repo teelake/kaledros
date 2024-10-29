@@ -6,10 +6,6 @@ pipeline {
         DYNAMIC_ENVIRONMENT_NAME = "review-${env.BRANCH_NAME}"
         DYNAMIC_ENVIRONMENT_URL = "https://${env.JOB_NAME}-${env.BUILD_NUMBER}.${env.DYNAMIC_ENVIRONMENT_NAME}.your-domain.com"
         SONAR_URL = 'http://13.52.68.80:9000' // Replace with actual SonarQube IP
-
-        // Use the username and password for AWS credentials
-    //AWS_ACCESS_KEY_ID = credentials('aws_credentials').username
-    //AWS_SECRET_ACCESS_KEY = credentials('aws_credentials').password
     }
 
     stages {
@@ -22,9 +18,11 @@ pipeline {
         stage('Validate Terraform') {
             steps {
                 script {
-                    dir('terraform/eks-cluster-ec2') {
-                        sh 'terraform init'
-                        sh 'terraform validate'
+                    withCredentials([aws(credentialsId: 'teelake-aws', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                        dir('terraform/eks-cluster-ec2') {
+                            sh 'terraform init'
+                            sh 'terraform validate'
+                        }
                     }
                 }
             }
@@ -33,8 +31,10 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 script {
-                    dir('terraform/eks-cluster-ec2') {
-                        sh 'terraform plan -out=tfplan'
+                    withCredentials([aws(credentialsId: 'teelake-aws', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                        dir('terraform/eks-cluster-ec2') {
+                            sh 'terraform plan -out=tfplan'
+                        }
                     }
                 }
             }
@@ -51,8 +51,10 @@ pipeline {
             }
             steps {
                 script {
-                    dir('terraform/eks-cluster-ec2') {
-                        sh 'terraform apply -auto-approve tfplan'
+                    withCredentials([aws(credentialsId: 'teelake-aws', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                        dir('terraform/eks-cluster-ec2') {
+                            sh 'terraform apply -auto-approve tfplan'
+                        }
                     }
                 }
             }
