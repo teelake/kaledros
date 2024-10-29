@@ -31,7 +31,7 @@ pipeline {
             withCredentials([aws(credentialsId: 'teelake-aws', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                 dir('terraform/eks-cluster-ec2') {
                     sh 'terraform init'
-                    sh 'terraform plan'
+                    sh 'TF_LOG=DEBUG terraform validate'
                 }
             }
         }
