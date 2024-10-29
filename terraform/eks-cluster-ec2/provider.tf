@@ -20,15 +20,9 @@
 # }
 
 provider "aws" {
-  region  = var.region
-  profile = "teelake"  # Use the new user profile
-  default_tags {
-    tags = {
-      Name    = "teelake"
-      project = "kaledros-App"
-    }
-  }
+  region = var.region
 }
+
 
 
 # Create an S3 bucket
