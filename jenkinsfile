@@ -15,18 +15,28 @@ pipeline {
             }
         }
 
-        stage('Validate Terraform') {
-            steps {
-                script {
-                    withCredentials([aws(credentialsId: 'teelake-aws', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                        dir('terraform/eks-cluster-ec2') {
-                            sh 'terraform init'
-                            sh 'terraform validate'
-                        }
-                    }
+        stage('Debug AWS Credentials') {
+    steps {
+        script {
+            sh 'echo $AWS_REGION'
+            sh 'echo $AWS_ACCESS_KEY_ID'  // Confirm these are set, but avoid printing secret keys
+        }
+    }
+}
+
+
+    stage('Validate Terraform') {
+    steps {
+        script {
+            withCredentials([aws(credentialsId: 'teelake-aws', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                dir('terraform/eks-cluster-ec2') {
+                    sh 'terraform init'
+                    sh 'terraform plan'
                 }
             }
         }
+    }
+}
 
         stage('Terraform Plan') {
             steps {
