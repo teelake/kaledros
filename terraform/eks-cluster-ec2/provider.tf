@@ -20,7 +20,8 @@
 # }
 
 provider "aws" {
-  region = var.region
+  region  = var.region
+  profile = "default"
   default_tags {
     tags = {
       Name    = "teelake"
@@ -28,6 +29,7 @@ provider "aws" {
     }
   }
 }
+
 
 # Create an S3 bucket
 resource "aws_s3_bucket" "my_bucket" {
