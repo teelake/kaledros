@@ -21,7 +21,7 @@
 
 provider "aws" {
   region  = var.region
-  profile = "default"
+  profile = "teelake"  # Use the new user profile
   default_tags {
     tags = {
       Name    = "teelake"
