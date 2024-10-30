@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # AWS configuration
-AWS_REGION = os.getenv('AWS_REGION', 'us-west-2')
+AWS_REGION = os.getenv('AWS_REGION', 'us-west-1')
 S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
 SQS_QUEUE_URL = os.getenv('SQS_QUEUE_URL')
 
