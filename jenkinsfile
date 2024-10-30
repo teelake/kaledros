@@ -81,7 +81,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    sh 'docker run kaledros-python-app:$BUILD_NUMBER python Kaledros-script.py --test'
+                    sh 'docker run kaledros-python-app:$BUILD_NUMBER python kaledros-script.py --test'
                 }
             }
         }
