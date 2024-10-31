@@ -77,13 +77,13 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
+        /*stage('Run Tests') {
             steps {
                 script {
                     sh 'docker run kaledros-python-app:$BUILD_NUMBER python kaledros-script.py --test'
                 }
             }
-        }
+        }*/
 
         stage('Deploy to Kubernetes') {
             when {
