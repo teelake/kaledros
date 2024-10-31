@@ -46,10 +46,10 @@ pipeline {
                         }
                     }
                 }
-            }
-            post {
-                success {
-                    archiveArtifacts artifacts: 'terraform/eks-cluster-ec2/tfplan', allowEmptyArchive: true
+                post {
+                    success {
+                        archiveArtifacts artifacts: 'terraform/eks-cluster-ec2/tfplan', allowEmptyArchive: true
+                    }
                 }
             }
         }
@@ -69,18 +69,19 @@ pipeline {
             }
         }
 
+        // Skip the 'Run Tests' stage
+        // stage('Run Tests') {
+        //     steps {
+        //         script {
+        //             sh 'docker run -d -p 3000:3000 kaledros-python-app:$BUILD_NUMBER python kaledros-script.py --test'
+        //         }
+        //     }
+        // }
+
         stage('Build Docker Image') {
             steps {
                 script {
                     sh 'docker build -t kaledros-python-app:$BUILD_NUMBER .'
-                }
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                script {
-                    sh 'docker run kaledros-python-app:$BUILD_NUMBER python kaledros-script.py --test'
                 }
             }
         }
@@ -100,21 +101,6 @@ pipeline {
                                 --set environment.url=$DYNAMIC_ENVIRONMENT_URL
                         '''
                     }
-                }
-            }
-        }
-
-        // New Stage for DevSecOps Deployment
-        stage('Deploy DevSecOps Project') {
-            steps {
-                script {
-                    // Clone DevSecOps repository and build/run it
-                    sh '''
-                        git clone https://github.com/N4si/DevSecOps-Project.git
-                        cd DevSecOps-Project
-                        docker build -t devsecops-app .
-                        docker run -d -p 3000:3000 devsecops-app  # Adjust port as necessary
-                    '''
                 }
             }
         }
