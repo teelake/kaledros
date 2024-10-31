@@ -16,27 +16,26 @@ pipeline {
         }
 
         stage('Debug AWS Credentials') {
-    steps {
-        script {
-            sh 'echo $AWS_REGION'
-            sh 'echo $AWS_ACCESS_KEY_ID'  // Confirm these are set, but avoid printing secret keys
-        }
-    }
-}
-
-
-    stage('Validate Terraform') {
-    steps {
-        script {
-            withCredentials([aws(credentialsId: 'teelake-aws', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                dir('terraform/eks-cluster-ec2') {
-                    sh 'terraform init'
-                    sh 'TF_LOG=DEBUG terraform validate'
+            steps {
+                script {
+                    sh 'echo $AWS_REGION'
+                    sh 'echo $AWS_ACCESS_KEY_ID'  // Confirm these are set, but avoid printing secret keys
                 }
             }
         }
-    }
-}
+
+        stage('Validate Terraform') {
+            steps {
+                script {
+                    withCredentials([aws(credentialsId: 'teelake-aws', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                        dir('terraform/eks-cluster-ec2') {
+                            sh 'terraform init'
+                            sh 'TF_LOG=DEBUG terraform validate'
+                        }
+                    }
+                }
+            }
+        }
 
         stage('Terraform Plan') {
             steps {
@@ -101,6 +100,21 @@ pipeline {
                                 --set environment.url=$DYNAMIC_ENVIRONMENT_URL
                         '''
                     }
+                }
+            }
+        }
+
+        // New Stage for DevSecOps Deployment
+        stage('Deploy DevSecOps Project') {
+            steps {
+                script {
+                    // Clone DevSecOps repository and build/run it
+                    sh '''
+                        git clone https://github.com/N4si/DevSecOps-Project.git
+                        cd DevSecOps-Project
+                        docker build -t devsecops-app .
+                        docker run -d -p 3000:3000 devsecops-app  # Adjust port as necessary
+                    '''
                 }
             }
         }
