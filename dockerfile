@@ -1,12 +1,32 @@
 # Dockerfile for kaledros-python-app
-FROM python:3.9-slim
+# #FROM python:3.9-slim
 
-WORKDIR /usr/src/app
+# WORKDIR /usr/src/app
 
+# COPY . .
+
+# RUN pip install --no-cache-dir -r requirements.txt
+
+# EXPOSE 8080
+
+# CMD ["python", "kaledros-script.py"]
+
+
+
+FROM node:16.17.0-alpine as builder
+WORKDIR /app
+COPY ./package.json .
+COPY ./yarn.lock .
+RUN yarn install
 COPY . .
+ARG TMDB_V3_API_KEY
+ENV VITE_APP_TMDB_V3_API_KEY=${TMDB_V3_API_KEY}
+ENV VITE_APP_API_ENDPOINT_URL="https://api.themoviedb.org/3"
+RUN yarn build
 
-RUN pip install --no-cache-dir -r requirements.txt
-
-EXPOSE 8080
-
-CMD ["python", "kaledros-script.py"]
+FROM nginx:stable-alpine
+WORKDIR /usr/share/nginx/html
+RUN rm -rf ./*
+COPY --from=builder /app/dist .
+EXPOSE 80
+ENTRYPOINT ["nginx", "-g", "daemon off;"]

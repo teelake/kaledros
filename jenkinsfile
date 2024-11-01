@@ -69,18 +69,18 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {   
-                        sh '''
-                            docker build --build-arg TMDB_V3_API_KEY=1243b08f4892d88ea53c88ac7142a6 -t teelake/netflix:latest .
-                            docker push teelake/netflix:latest
-                        '''
-                    }
-                }
+       stage('Build Docker Image') {
+    steps {
+        script {
+            withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {   
+                sh '''
+                    docker build --build-arg TMDB_V3_API_KEY=1243b08f4892d88ea53c88ac7142a6 -t teelake/netflix:latest .
+                    docker push teelake/netflix:latest
+                '''
             }
         }
+    }
+}
 
         stage('Deploy to Kubernetes') {
             when {
@@ -105,11 +105,12 @@ pipeline {
             steps {
                 script {
                     sh '''
-                         git clone https://github.com/N4si/DevSecOps-Project.git
-    cd DevSecOps-Project
-    docker build --build-arg TMDB_V3_API_KEY=1243b08f4892d88ea53c88ac7142a6 -t devsecops-app .
-    docker run -d --name devsecops-app -p 8081:80 devsecops-app  # Adjust port as necessary
-                    '''
+                      git clone https://github.com/N4si/DevSecOps-Project.git
+                cd DevSecOps-Project
+                docker build --no-cache --build-arg TMDB_V3_API_KEY=1243b08f4892d88ea53c88ac7142a6 -t devsecops-app .
+                docker run -d --name devsecops-app -p 8081:80 devsecops-app  # Adjust port as necessary
+            '''
+                      
                 }
             }
         }
