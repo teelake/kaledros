@@ -18,8 +18,8 @@ pipeline {
         stage('Debug AWS Credentials') {
             steps {
                 script {
-                    sh 'echo $AWS_REGION'
-                    sh 'echo $AWS_ACCESS_KEY_ID'  // Confirm these are set, but avoid printing secret keys
+                    // Log AWS Region (avoid printing sensitive information)
+                    sh 'echo AWS_REGION: $AWS_REGION'
                 }
             }
         }
@@ -72,18 +72,15 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t kaledros-python-app:$BUILD_NUMBER .'
+                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {   
+                        sh '''
+                            docker build --build-arg TMDB_V3_API_KEY=1243b08f4892d88ea53c88ac7142a6 -t teelake/netflix:latest .
+                            docker push teelake/netflix:latest
+                        '''
+                    }
                 }
             }
         }
-
-        /*stage('Run Tests') {
-            steps {
-                script {
-                    sh 'docker run kaledros-python-app:$BUILD_NUMBER python kaledros-script.py --test'
-                }
-            }
-        }*/
 
         stage('Deploy to Kubernetes') {
             when {
@@ -104,16 +101,14 @@ pipeline {
             }
         }
 
-        // New Stage for DevSecOps Deployment
         stage('Deploy DevSecOps Project') {
             steps {
                 script {
-                    // Clone DevSecOps repository and build/run it
                     sh '''
                         git clone https://github.com/N4si/DevSecOps-Project.git
                         cd DevSecOps-Project
                         docker build -t devsecops-app .
-                        docker run -d -p 3000:3000 devsecops-app  # Adjust port as necessary
+                        docker run -d --name devsecops-app -p 8081:80 devsecops-app  # Adjust port as necessary
                     '''
                 }
             }
