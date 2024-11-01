@@ -68,6 +68,21 @@ pipeline {
                 }
             }
         }
+        stage('Debug Buildx') {
+    steps {
+        script {
+            sh '''
+                echo "Docker version:"
+                docker --version
+                echo "Buildx version:"
+                docker buildx version
+                echo "Docker context:"
+                docker context ls
+            '''
+        }
+    }
+}
+
 
        /* stage('Build Docker Image') {
             steps {
@@ -105,19 +120,21 @@ pipeline {
         }
 
         // New Stage for DevSecOps Deployment
-        stage('Deploy DevSecOps Project') {
-            steps {
-                script {
-                    // Clone DevSecOps repository and build/run it
-                    sh '''
-                        git clone https://github.com/N4si/DevSecOps-Project.git
-                        cd DevSecOps-Project
-                        docker build -t devsecops-app .
-                        docker run -d -p 3000:3000 devsecops-app  # Adjust port as necessary
-                    '''
-                }
-            }
+       stage('Deploy DevSecOps Project') {
+    steps {
+        script {
+            // Clone DevSecOps repository and build/run it
+            sh '''
+                git clone https://github.com/N4si/DevSecOps-Project.git
+                cd DevSecOps-Project
+                docker buildx create --use || true  # Create and use a Buildx builder
+                docker buildx build --platform linux/amd64 -t devsecops-app . --load  # Use Buildx to build the image
+                docker run -d -p 3000:3000 devsecops-app  # Adjust port as necessary
+            '''
         }
+    }
+}
+
     }
 
     post {
